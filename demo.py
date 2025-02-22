@@ -1,6 +1,7 @@
 import os
 import litellm
 from dotenv import load_dotenv
+from smolagents import Tool
 
 # Load environment variables from .env file
 load_dotenv()
