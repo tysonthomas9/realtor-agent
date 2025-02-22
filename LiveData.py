@@ -5,6 +5,7 @@ import httpx
 from parsel import Selector
 from typing_extensions import TypedDict
 
+# TEST 2
 ## PROMPT SCRAPING SINGLE PROPERTY DATA FROM URL (LIVE DATA)
 
 # First, we sneed to establish a persisten HTTPX session 
