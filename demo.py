@@ -2,6 +2,7 @@ import os
 import litellm
 from dotenv import load_dotenv
 from smolagents import Tool
+from rag import retriever_tool
 
 # Load environment variables from .env file
 load_dotenv()
@@ -81,7 +82,11 @@ human_tool = HumanInterventionTool()
 model_id = "groq/qwen-2.5-coder-32b"
 model = LiteLLMModel(model_id=model_id, api_key=api_key)
 
-# Initialize the agent with the image generation tool
-agent = CodeAgent(tools=[VisitWebpageTool(), human_tool], model=model, add_base_tools=True)
+# Initialize the agent with the tools
+agent = CodeAgent(
+    tools=[retriever_tool], 
+    model=model, 
+    add_base_tools=True
+)
 
 GradioUI(agent).launch()
