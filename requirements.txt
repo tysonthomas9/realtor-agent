@@ -82,3 +82,7 @@ uvicorn==0.34.0
 websockets==14.2
 yarl==1.18.3
 zipp==3.21.0
+langchain
+langchain-community
+faiss-cpu
+sentence-transformers
