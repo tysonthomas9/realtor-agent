@@ -127,7 +127,7 @@ class LoadRealtorDataTool(Tool):
 human_tool = HumanInterventionTool()
 load_realtor_data_tool = LoadRealtorDataTool()
 
-model_id = "openai/gpt-4o"
+model_id = "groq/qwen-2.5-coder-32b"
 model = LiteLLMModel(model_id=model_id, api_key=api_key)
 
 realtor_agent = CodeAgent(
@@ -160,21 +160,6 @@ comparable_agent = CodeAgent(
     6. Use the realtor_agent to analyze the properties
     Provide detailed summaries after each search with links to the sources. Never make up information or make assumptions. Alwayse search for realtor.com links.""",
 )
-
-manager_agent = CodeAgent(
-    tools=[human_tool],
-    model=model,
-    managed_agents=[realtor_agent, comparable_agent],
-)
-
-# Initialize the agent with the tools
-agent = CodeAgent(
-    tools=[retriever_tool], 
-    model=model, 
-    add_base_tools=False
-)
-
-GradioUI(agent).launch()
 
 class RealEstateAgent:
     def __init__(self):
@@ -353,9 +338,11 @@ Summary and Recommendations:
 # Initialize the expert tool
 real_estate_expert = RealEstateExpertTool()
 
-# Initialize the model
-model_id = "openai/gpt-4"
-model = LiteLLMModel(model_id=model_id, api_key=api_key)
+# manager_agent = CodeAgent(
+#     tools=[human_tool],
+#     model=model,
+#     managed_agents=[realtor_agent, comparable_agent],
+# )
 
 # Initialize the agent with both tools
 agent = CodeAgent(

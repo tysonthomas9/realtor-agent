@@ -6,7 +6,7 @@ from langchain_community.document_loaders import DirectoryLoader
 
 # Load documents from your local directory
 loader = DirectoryLoader(
-    path="/downloads/reator_agent_docs",
+    path="./reator_agent_docs",
     glob="**/*",  # This will match all files recursively
     show_progress=True
 )
