@@ -3,7 +3,7 @@ from PyPDF2 import PdfReader  # pip install PyPDF2
 from langchain.docstore.document import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.retrievers import BM25Retriever
-from smolagents import Tool, CodeAgent, HfApiModel
+from smolagents import Tool, CodeAgent, LiteLLMModel  # HfApiModel 대신 LiteLLMModel을 임포트합니다.
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -82,22 +82,19 @@ class RetrieverTool(Tool):
 # 4. 에이전트 구성 및 실행
 # -----------------------------
 retriever_tool = RetrieverTool(docs_processed)
-# agent = CodeAgent(
-#     tools=[retriever_tool],
-#     # 원하는 모델로 교체 가능
-#     model=HfApiModel("meta-llama/Llama-3.3-70B-Instruct"),
-#     max_steps=4,
-#     verbosity_level=2,
-# )
+
+# Define the model ID
+model_id = "groq/qwen-2.5-coder-32b"
+
+# Create the LiteLLMModel with model_id and API key
+model = LiteLLMModel(model_id=model_id, api_key=groq_api_key)
 
 agent = CodeAgent(
     tools=[retriever_tool],
-    # model=HfApiModel("groq/qwen-2.5-coder-32b", api_key=groq_api_key),
-    model=HfApiModel("groq/qwen-2.5-coder-32b"),
+    model=model,
     max_steps=4,
     verbosity_level=2,
 )
-
 
 # 간단한 테스트 질의
 query = "What does this PDF say about the Purchase Price?"
