@@ -79,14 +79,14 @@ class HumanInterventionTool(Tool):
 # Instantiate the tools
 human_tool = HumanInterventionTool()
 
-model_id = "groq/qwen-2.5-coder-32b"
+model_id = "openai/gpt-3.5-turbo"
 model = LiteLLMModel(model_id=model_id, api_key=api_key)
 
 # Initialize the agent with the tools
 agent = CodeAgent(
     tools=[retriever_tool], 
     model=model, 
-    add_base_tools=True
+    add_base_tools=False
 )
 
 GradioUI(agent).launch()
