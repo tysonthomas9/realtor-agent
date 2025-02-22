@@ -82,3 +82,8 @@ uvicorn==0.34.0
 websockets==14.2
 yarl==1.18.3
 zipp==3.21.0
+datasets>=2.10.0
+langchain>=0.0.219
+langchain_community>=0.0.45
+smolagents>=1.0.0
+huggingface_hub>=0.14.1
