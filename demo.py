@@ -132,18 +132,18 @@ model = LiteLLMModel(model_id=model_id, api_key=api_key)
 
 realtor_agent = CodeAgent(
     tools=[load_realtor_data_tool],
-    additional_authorized_imports=["time", "numpy", "bs4", "requests", "asyncio", "parsel", "httpx", "markdownify", "re"],
+    additional_authorized_imports=["time", "numpy", "bs4", "requests", "asyncio", "parsel", "httpx", "markdownify", "re", "json"],
     model=model,
     add_base_tools=False,
     name="realtor_agent",
-    description="""Analyzes property data in detail following these steps:
+    description="""Analyzes property data in detail following these steps (Only search web for realtor.com links):
     1. Load the property data or find it on the web from realtor.com
     2. Analyze basic property features and price
     3. Calculate key metrics (price per sqft, estimated ROI)
     4. Compare with similar properties
     5. Assess investment potential
     6. Generate detailed property report
-    Always explain calculations and reasoning.""",
+    Always explain calculations and reasoning. Do not make up information or make assumptions. Always search for realtor.com links.""",
 )
 
 comparable_agent = CodeAgent(
