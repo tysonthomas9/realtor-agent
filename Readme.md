@@ -16,4 +16,3 @@ python demo.py
 
 
     space_id = "U3BhY2U6MTYwMjE6MXpTdA==",
-    api_key = "06f3df27cd5699e0724",
