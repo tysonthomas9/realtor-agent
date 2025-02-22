@@ -338,18 +338,23 @@ Summary and Recommendations:
 # Initialize the expert tool
 real_estate_expert = RealEstateExpertTool()
 
-# manager_agent = CodeAgent(
-#     tools=[human_tool],
-#     model=model,
-#     managed_agents=[realtor_agent, comparable_agent],
-# )
-
 # Initialize the agent with both tools
-agent = CodeAgent(
+document_agent = CodeAgent(
     tools=[retriever_tool, real_estate_expert], 
     model=model,
-    add_base_tools=False
+    add_base_tools=False,
+    name="document_agent",
+    description="""Analyzes property data in detail following these steps (Input to this agent is for example: What are the forms we can use for single family homes?):
+    1. Explan which documents are needed based on the property details and the type of property.
+    2. Respond with the documents needed and the format of the documents.
+    Always use the documents from the memory. for example: If the document is single family home, then use the residential single family family home documents from the memory.""",
+)
+
+manager_agent = CodeAgent(
+    tools=[human_tool],
+    model=model,
+    managed_agents=[realtor_agent, comparable_agent, document_agent],
 )
 
 # Launch the Gradio interface
-GradioUI(agent).launch()
+GradioUI(manager_agent).launch()
