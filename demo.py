@@ -1,16 +1,46 @@
 import os
-import litellm
 from dotenv import load_dotenv
 from smolagents import Tool
 from rag import retriever_tool
+
+# Add import for scrape_properties
+from LiveData import scrape_properties
 
 # Load environment variables from .env file
 load_dotenv()
 
 # Get API key with error handling
-api_key = os.environ.get('GROQ_API_KEY')
+api_key = os.environ.get('OPEN_API_KEY')
 if not api_key:
-    raise ValueError("GROQ_API_KEY environment variable is not set. Please create a .env file with your API key.")
+    raise ValueError("OPEN_API_KEY environment variable is not set. Please create a .env file with your API key.")
+
+arize_space_id = os.environ.get('ARIZE_SPACE_ID')
+if not arize_space_id:
+    raise ValueError("ARIZE_SPACE_ID environment variable is not set. Please create a .env file with your space ID.")
+
+arize_api_key = os.environ.get('ARIZE_API_KEY')
+if not arize_api_key:
+    raise ValueError("ARIZE_API_KEY environment variable is not set. Please create a .env file with your API key.")
+
+from arize.otel import register
+
+tracer_provider = register(
+    space_id = arize_space_id,
+    api_key = arize_api_key,
+    project_name = "Realtor Agent", 
+)
+
+from opentelemetry import trace
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+
+from openinference.instrumentation.smolagents import SmolagentsInstrumentor
+from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+from opentelemetry.sdk.trace.export import ConsoleSpanExporter, SimpleSpanProcessor
+
+SmolagentsInstrumentor().instrument(tracer_provider=tracer_provider)
+
+import litellm
 
 from smolagents import (
     load_tool,
@@ -76,20 +106,60 @@ class HumanInterventionTool(Tool):
             return user_input
 
 
+class LoadRealtorDataTool(Tool):
+    """
+    Loads realtor data from the URL provided.
+    """
+    name = "load_realtor_data"
+    description = "Loads realtor data from website."
+    inputs = {
+        "url": {
+            "type": "string",
+            "description": "The URL of the realtor data to load."
+        }
+    }
+    output_type = "string"
+
+    def forward(self, url: str) -> str:
+        return scrape_properties([url])
+
 # Instantiate the tools
 human_tool = HumanInterventionTool()
+load_realtor_data_tool = LoadRealtorDataTool()
 
 model_id = "openai/gpt-4o"
 model = LiteLLMModel(model_id=model_id, api_key=api_key)
 
-# Initialize the agent with the tools
-agent = CodeAgent(
-    tools=[retriever_tool], 
-    model=model, 
-    add_base_tools=False
+realtor_agent = CodeAgent(
+    tools=[load_realtor_data_tool],
+    additional_authorized_imports=["time", "numpy", "bs4", "requests", "asyncio", "parsel", "httpx", "markdownify", "re", "json"],
+    model=model,
+    add_base_tools=False,
+    name="realtor_agent",
+    description="""Analyzes property data in detail following these steps (Only search web for realtor.com links):
+    1. Load the property data or find it on the web from realtor.com
+    2. Analyze basic property features and price
+    3. Calculate key metrics (price per sqft, estimated ROI)
+    4. Compare with similar properties
+    5. Assess investment potential
+    6. Generate detailed property report
+    Always explain calculations and reasoning. Do not make up information or make assumptions. Always search for realtor.com links.""",
 )
 
-GradioUI(agent).launch()
+comparable_agent = CodeAgent(
+    tools=[VisitWebpageTool(), human_tool],
+    model=model,
+    add_base_tools=True,
+    name="comparable_agent",
+    description="""Performs detailed web research for real estate information. Follow these steps:
+    1. Find similar properties in the area using the web tool or search the web for similar properties
+    2. Gather information about the neighborhood and amenities
+    3. Look for historical price trends in the area
+    4. Research local schools and transportation
+    5. Check for any recent news about the area
+    6. Use the realtor_agent to analyze the properties
+    Provide detailed summaries after each search with links to the sources. Never make up information or make assumptions. Alwayse search for realtor.com links.""",
+)
 
 class RealEstateAgent:
     def __init__(self):
@@ -177,10 +247,10 @@ class RealEstateAgent:
 
 class TRECDocumentAnalyzer:
     def __init__(self):
-        self.document_types = {
-            '20_MultiFamilyPSA': self.analyze_multifamily_contract,
-            # ... other document types ...
-        }
+        # self.document_types = {
+        #     '20_MultiFamilyPSA': self.analyze_multifamily_contract,
+        #     # ... other document types ...
+        # }
         # Initialize the retriever tool for document search
         self.retriever = retriever_tool
         
@@ -268,16 +338,23 @@ Summary and Recommendations:
 # Initialize the expert tool
 real_estate_expert = RealEstateExpertTool()
 
-# Initialize the model
-model_id = "openai/gpt-4"
-model = LiteLLMModel(model_id=model_id, api_key=api_key)
-
 # Initialize the agent with both tools
-agent = CodeAgent(
+document_agent = CodeAgent(
     tools=[retriever_tool, real_estate_expert], 
     model=model,
-    add_base_tools=False
+    add_base_tools=False,
+    name="document_agent",
+    description="""Analyzes property data in detail following these steps (Input to this agent is for example: What are the forms we can use for single family homes?):
+    1. Explan which documents are needed based on the property details and the type of property.
+    2. Respond with the documents needed and the format of the documents.
+    Always use the documents from the memory. for example: If the document is single family home, then use the residential single family family home documents from the memory.""",
+)
+
+manager_agent = CodeAgent(
+    tools=[human_tool],
+    model=model,
+    managed_agents=[realtor_agent, comparable_agent, document_agent],
 )
 
 # Launch the Gradio interface
-GradioUI(agent).launch()
+GradioUI(manager_agent).launch()

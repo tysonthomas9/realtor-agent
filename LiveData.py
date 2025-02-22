@@ -1,7 +1,8 @@
-import asyncio
 import json
 from typing import List
-import httpx
+import requests
+from markdownify import markdownify
+import re
 from parsel import Selector
 from typing_extensions import TypedDict
 
@@ -16,7 +17,10 @@ BASE_HEADERS = {
     "accept-language": "en-US;en;q=0.9",
     "accept-encoding": "gzip, deflate, br",
 }
-session = httpx.AsyncClient(headers=BASE_HEADERS)
+
+# Replace async httpx client with regular requests session
+session = requests.Session()
+session.headers.update(BASE_HEADERS)
 
 # type hints fo expected results - property listing has a lot of data!
 class PropertyResult(TypedDict):
@@ -29,9 +33,16 @@ class PropertyResult(TypedDict):
     ...  # and much more!
 
 
-def parse_property(response: httpx.Response) -> PropertyResult:
+def parse_property(response: requests.Response) -> PropertyResult:
     """parse Realtor.com property page"""
     # load response's HTML tree for parsing:
+    # print(response.text)
+        # Convert the HTML content to Markdown
+    # markdown_content = markdownify(response.text).strip()
+
+    # # Remove multiple line breaks
+    # markdown_content = re.sub(r"\n{3,}", "\n\n", markdown_content)
+
     selector = Selector(text=response.text)
     # find <script id="__NEXT_DATA__"> node and select it's text:
     data = selector.css("script#__NEXT_DATA__::text").get()
@@ -43,13 +54,11 @@ def parse_property(response: httpx.Response) -> PropertyResult:
     return data["props"]["pageProps"]["initialReduxState"]
 
 
-async def scrape_properties(urls: List[str]) -> List[PropertyResult]:
+def scrape_properties(urls: List[str]) -> List[PropertyResult]:
     """Scrape Realtor.com properties"""
     properties = []
-    to_scrape = [session.get(url) for url in urls]
-    # tip: asyncio.as_completed allows concurrent scraping - super fast!
-    for response in asyncio.as_completed(to_scrape):
-        response = await response
+    for url in urls:
+        response = session.get(url)
         if response.status_code != 200:
             print(f"|can't scrape property: {response.url}")
             continue
@@ -58,7 +67,7 @@ async def scrape_properties(urls: List[str]) -> List[PropertyResult]:
 
 # some realtor.com property urls
 urls = [
-        "https://www.realtor.com/realestateandhomes-detail/12355-Attlee-Dr_Houston_TX_77077_M70330-35605"
-    ]
-results = await scrape_properties(urls)
+    "https://www.realtor.com/realestateandhomes-detail/12355-Attlee-Dr_Houston_TX_77077_M70330-35605"
+]
+results = scrape_properties(urls)
 print(json.dumps(results, indent=2))

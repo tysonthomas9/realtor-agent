@@ -14,3 +14,6 @@ export GROQ_API_KEY=<your_groq_api_key>
 python demo.py
 ```
 
+
+    space_id = "U3BhY2U6MTYwMjE6MXpTdA==",
+    api_key = "06f3df27cd5699e0724",

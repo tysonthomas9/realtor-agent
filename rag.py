@@ -39,7 +39,7 @@ class RetrieverTool(Tool):
 
 # Document loading and processing
 loader = DirectoryLoader(
-    '../../../Downloads/reator_agent_docs',
+    './reator_agent_docs',
     glob="*.pdf",  # Focus on PDF files
     loader_cls=PyPDFLoader,
     recursive=True
