@@ -19,45 +19,6 @@ from smolagents import (
     Tool
 )
 
-class CalculatorTool(Tool):
-    """
-    A simple calculator for demonstration. 
-    Supports 'add', 'subtract', 'multiply', or 'divide'.
-    """
-    name = "calculator"
-    description = "Perform basic arithmetic. Provide 'operation' plus numeric 'a' and 'b'."
-    inputs = {
-        "operation": {
-            "type": "string",
-            "description": "Which operation to perform: add, subtract, multiply, or divide."
-        },
-        "a": {
-            "type": "number",
-            "description": "First operand."
-        },
-        "b": {
-            "type": "number",
-            "description": "Second operand."
-        }
-    }
-    output_type = "string"
-
-    def forward(self, operation: str, a: float, b: float) -> str:
-        match operation:
-            case "add":
-                return f"Result: {a + b}"
-            case "subtract":
-                return f"Result: {a - b}"
-            case "multiply":
-                return f"Result: {a * b}"
-            case "divide":
-                if b == 0:
-                    return "Error: Division by zero!"
-                return f"Result: {a / b}"
-            case _:
-                return "Error: Invalid operation. Choose from add / subtract / multiply / divide."
-
-
 class HumanInterventionTool(Tool):
     """
     A universal human-in-the-loop tool:
@@ -115,13 +76,12 @@ class HumanInterventionTool(Tool):
 
 
 # Instantiate the tools
-calculator_tool = CalculatorTool()
 human_tool = HumanInterventionTool()
 
 model_id = "groq/qwen-2.5-coder-32b"
 model = LiteLLMModel(model_id=model_id, api_key=api_key)
 
 # Initialize the agent with the image generation tool
-agent = CodeAgent(tools=[VisitWebpageTool(), calculator_tool, human_tool], model=model, add_base_tools=True)
+agent = CodeAgent(tools=[VisitWebpageTool(), human_tool], model=model, add_base_tools=True)
 
 GradioUI(agent).launch()
