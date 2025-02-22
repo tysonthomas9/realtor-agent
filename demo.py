@@ -10,9 +10,9 @@ from LiveData import scrape_properties
 load_dotenv()
 
 # Get API key with error handling
-api_key = os.environ.get('GROQ_API_KEY')
+api_key = os.environ.get('OPEN_API_KEY')
 if not api_key:
-    raise ValueError("GROQ_API_KEY environment variable is not set. Please create a .env file with your API key.")
+    raise ValueError("OPEN_API_KEY environment variable is not set. Please create a .env file with your API key.")
 
 arize_space_id = os.environ.get('ARIZE_SPACE_ID')
 if not arize_space_id:
@@ -127,7 +127,7 @@ class LoadRealtorDataTool(Tool):
 human_tool = HumanInterventionTool()
 load_realtor_data_tool = LoadRealtorDataTool()
 
-model_id = "groq/qwen-2.5-coder-32b"
+model_id = "openai/gpt-4o"
 model = LiteLLMModel(model_id=model_id, api_key=api_key)
 
 realtor_agent = CodeAgent(
@@ -247,10 +247,10 @@ class RealEstateAgent:
 
 class TRECDocumentAnalyzer:
     def __init__(self):
-        self.document_types = {
-            '20_MultiFamilyPSA': self.analyze_multifamily_contract,
-            # ... other document types ...
-        }
+        # self.document_types = {
+        #     '20_MultiFamilyPSA': self.analyze_multifamily_contract,
+        #     # ... other document types ...
+        # }
         # Initialize the retriever tool for document search
         self.retriever = retriever_tool
         
