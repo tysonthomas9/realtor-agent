@@ -104,9 +104,15 @@ pip install -r requirements.txt
 
 3. Set environment variables:
 ```bash
-export GROQ_API_KEY=<your_groq_api_key> 
+export OPEN_API_KEY=<your_open_api_key> 
 ```
 
+## Available Agents
+
+1. **Realtor Agent**: Analyzes property data and generates detailed reports
+2. **Comparable Agent**: Performs market research and property comparisons
+3. **Document Agent**: Processes and analyzes real estate documents
+   
 ## Usage
 
 1. Run the demo:
@@ -123,12 +129,6 @@ python demo.py
 - `tools/`: Directory for tool components.
 - `utils/`: Utility functions.
 - `config.py`: Configuration settings.          
-
-## Available Agents
-
-1. **Realtor Agent**: Analyzes property data and generates detailed reports
-2. **Comparable Agent**: Performs market research and property comparisons
-3. **Document Agent**: Processes and analyzes real estate documents
 
 ## Supported Document Types
 
