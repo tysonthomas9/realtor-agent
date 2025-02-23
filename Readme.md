@@ -146,3 +146,12 @@ python demo.py
 ## Support
 
 For support, please open an issue in the repository or contact the maintainers.
+
+
+## Hackathon
+
+This project was created during Open Source AI Hackathon #14 - AI Agents https://lu.ma/0csh7daf
+
+Saturday, February 22, 9:00 AM - 6:00 PM
+
+Microsoft Reactor Redmond, Redmond, Washington
