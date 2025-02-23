@@ -80,6 +80,10 @@ sequenceDiagram
 4. Results consolidated and returned to user
 5. All interactions logged for tracking
 
+## Demo
+
+![Demo](demo.gif)
+
 ## Prerequisites
 
 - Python 3.8+
