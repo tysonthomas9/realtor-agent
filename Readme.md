@@ -1,4 +1,4 @@
-# Real Estate Agent AI Assistant
+# Realtor Agent
 
 An intelligent real estate agent system powered by AI that helps analyze properties, documents, and assists with real estate transactions and creating purchase sale agreements.
 
