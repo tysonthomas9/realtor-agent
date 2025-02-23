@@ -11,6 +11,10 @@ An intelligent real estate agent system powered by AI that helps analyze propert
 - Document Search and Retrieval
 - Live Property Data Scraping
 
+## Demo
+
+![Demo](demo.gif)
+
 ## System Flow
 
 ```mermaid
@@ -79,10 +83,6 @@ sequenceDiagram
 3. Specialized agents process specific tasks
 4. Results consolidated and returned to user
 5. All interactions logged for tracking
-
-## Demo
-
-![Demo](demo.gif)
 
 ## Prerequisites
 
