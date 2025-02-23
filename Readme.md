@@ -5,7 +5,7 @@ An intelligent real estate agent system powered by AI that helps analyze propert
 ## Features
 
 - Property Analysis from realtor.com
-- Real Estate Document Processing (TREC Forms)
+- Real Estate Document Processing
 - Multi-Agent System Architecture
 - Interactive Human-in-the-Loop Tools
 - Document Search and Retrieval
