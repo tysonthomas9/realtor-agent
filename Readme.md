@@ -11,6 +11,75 @@ An intelligent real estate agent system powered by AI that helps analyze propert
 - Document Search and Retrieval
 - Live Property Data Scraping
 
+## System Flow
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant UI as Gradio Interface
+    participant MA as Manager Agent
+    participant RA as Realtor Agent
+    participant CA as Comparable Agent
+    participant DA as Document Agent
+    participant API as External APIs
+    participant DB as Document Store
+
+    User->>UI: Enter Query/Request
+    UI->>MA: Forward Request
+    
+    alt Property Analysis
+        MA->>RA: Delegate Property Analysis
+        RA->>API: Fetch Property Data
+        API-->>RA: Return Property Details
+        RA-->>MA: Property Analysis Report
+    
+    else Market Research
+        MA->>CA: Request Comparables
+        CA->>API: Search Similar Properties
+        API-->>CA: Return Market Data
+        CA-->>MA: Comparative Analysis
+    
+    else Document Processing
+        MA->>DA: Process TREC Forms
+        DA->>DB: Retrieve Documents
+        DB-->>DA: Return Document Content
+        DA-->>MA: Document Analysis
+    end
+    
+    MA-->>UI: Consolidated Response
+    UI-->>User: Display Results
+```
+
+### Component Roles
+
+1. **Manager Agent**
+   - Coordinates between specialized agents
+   - Handles user interaction flow
+   - Determines request type and routing
+
+2. **Realtor Agent**
+   - Analyzes property listings
+   - Generates property reports
+   - Calculates key metrics
+
+3. **Comparable Agent**
+   - Performs market research
+   - Finds similar properties
+   - Analyzes neighborhood data
+
+4. **Document Agent**
+   - Processes TREC forms
+   - Analyzes legal documents
+   - Extracts key information
+
+### Data Flow
+
+1. User inputs query through Gradio interface
+2. Manager Agent determines request type
+3. Specialized agents process specific tasks
+4. Results consolidated and returned to user
+5. All interactions logged for tracking
+
 ## Prerequisites
 
 - Python 3.8+
